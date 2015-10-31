@@ -10,6 +10,8 @@ Afterwards, you can go to `http://myaddress:myport` and ask a question there (in
 
 Ideally you set up your system with appropriate surroundings (e.g. DNS and a reverse-proxy to put the `koppler` behind something like `ask.mydomain.com`).
 
+Resetting is in current state only possible by restarting `koppler`.
+
 
 ## License
 
