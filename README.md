@@ -8,9 +8,10 @@ Ask questions during a talk anonymously.
 Build the software (`go build` should be sufficient) and run it (maybe with `-web.address=myaddress:myport`).
 Afterwards, you can go to `http://myaddress:myport` and ask a question there (intended for the audience) and you can go to `http://myaddress:myport/questions` to see all questions asked up to now.
 
-Ideally you set up your system with appropriate surroundings (e.g. DNS and a reverse-proxy to put the `koppler` behind something like `ask.mydomain.com`).
+Ideally you set up your system with appropriate surroundings (e.g. DNS and a reverse-proxy to put the `koppler` behind something like `ask.mydomain.com`). Be sure to run the binary from a folder 
+that contains the ``templates/`` and ``static/`` subdirectories of this repository.
 
-Resetting is in current state only possible by restarting `koppler`.
+Resetting is in current state only possible by restarting `rueckkopplung`.
 
 
 ## License

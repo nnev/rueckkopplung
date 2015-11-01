@@ -1,33 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"log"
-	"strings"
 	"flag"
+	"fmt"
+	"log"
+	"net/http"
+	"strings"
 )
 
 var (
-	questions = []string{}
+	questions    = []string{}
 	questionPipe = make(chan string)
 )
 
 var addr = flag.String("web.address", "127.0.0.1:8080", "web-address and port to listen on")
-
-var formPage = `<!DOCTYPE html>
-<html>
-<head>
-<title>Frage stellen</title>
-<meta charset="UTF-8">
-</head>
-<body>
-<form action="/submit" method="POST">
-    Frage: <input type="text" name="frage">
-    <input type="submit" value="fragen">
-</form>
-</body>
-</html>`
 
 func writeError(errno int, res http.ResponseWriter, format string, args ...interface{}) {
 	res.WriteHeader(errno)
@@ -74,15 +60,27 @@ func exposeQuestions(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, questionblock)
 }
 
-
 func main() {
 	flag.Parse()
 	go collectQuestions()
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/submit", handleForm)
-	http.HandleFunc("/questions", exposeQuestions)
+	http.HandleFunc("/questions/raw", exposeQuestions)
+	http.HandleFunc("/questions",
+		func(w http.ResponseWriter, r *http.Request) {
+			if err := ExecuteTemplate(w, TemplateInput{Body: "questions.html"}); err != nil {
+				log.Println("Could not render template:", err)
+				http.Error(w, "Internal error", 500)
+				return
+			}
+		})
 	http.HandleFunc("/",
 		func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, formPage)
+			if err := ExecuteTemplate(w, TemplateInput{Body: "form.html"}); err != nil {
+				log.Println("Could not render template:", err)
+				http.Error(w, "Internal error", 500)
+				return
+			}
 		})
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
